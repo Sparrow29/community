@@ -3,16 +3,20 @@ package com.nowcoder.community.controller;
 import com.google.code.kaptcha.Producer;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.util.CommunityConstant;
+import com.nowcoder.community.util.CommunityUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
+import javax.net.ssl.HttpsURLConnection;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
@@ -21,9 +25,12 @@ import java.io.OutputStream;
 import java.util.Map;
 
 @Controller
-public class LoginController {
+public class LoginController implements CommunityConstant {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
 
     @Autowired
     private UserService userService;
@@ -94,5 +101,96 @@ public class LoginController {
         }
     }
 
+    /**
+     *
+     * @param username 接受客户端输入的用户名
+     * @param password 接受客户端输入的密码
+     * @param code  接受客户端输入的验证码
+     * @param rememberMe 接受客户端勾选的记住我
+     * @param model 用于封装向前端控制器返回的数据 Message
+     * @param session 用于获取服务器内存的验证码
+     * @param response 用于向客户端发送cookie 存放登录凭证
+     * @return
+     */
+    @RequestMapping(path = "/login", method = RequestMethod.POST)
+    public String login(String username, String password, String code, boolean rememberMe,
+                        Model model, HttpSession session, HttpServletResponse response){
+        //检查验证码
+        String kaptcha = (String)session.getAttribute("kaptcha");
+        if(StringUtils.isBlank(code)){
+            model.addAttribute("codeMsg", "验证码不能为空!");
+            return "/site/login";
+        }
+        if(!code.equalsIgnoreCase(kaptcha)){
+            model.addAttribute("codeMsg", "验证码不正确!");
+            return "/site/login";
+        }
+        //是否勾选记住我
+
+        int expiredSeconds = rememberMe ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
+        //检查账号、密码、rememberMe
+        Map<String, Object> map = userService.login(username, password, expiredSeconds);
+        //若登录成功, 将ticket响应给客户端
+        if(map.containsKey("ticket")){
+            Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
+            cookie.setPath(contextPath);
+            cookie.setMaxAge(expiredSeconds);
+            response.addCookie(cookie);
+            return "redirect:/index";
+        }
+        else{
+            model.addAttribute("usernameMsg", map.get("usernameMsg"));
+            model.addAttribute("passwordMsg", map.get("passwordMsg"));
+            return "/site/login";
+        }
+    }
+
+    //处理用户登出请求
+    @RequestMapping(path = "/logout", method = RequestMethod.GET)
+    public String logout(@CookieValue("ticket") String ticket){
+        userService.logout(ticket);
+        return "redirect:/login";
+    }
+
+    //返回忘记密码页面
+    @RequestMapping(path = "/forget", method = RequestMethod.GET)
+    public String getForgetPage(){
+        return "/site/forget";
+    }
+
+    //忘记密码->获取邮箱验证码
+    @RequestMapping(path = "/forget/code", method = RequestMethod.GET)
+    @ResponseBody
+    public String getVerifyCode(String email, HttpSession session){
+        Map<String, Object> map = userService.getVerifyCode(email);
+        if(map.containsKey("verifyCode")){
+            session.setAttribute(email, map.get("verifyCode"));
+            session.setMaxInactiveInterval(60 * 5);
+            return CommunityUtils.getJSONString(0);
+        }
+        else{
+           return CommunityUtils.getJSONString(1, (String)map.get("emailMsg"));
+        }
+
+    }
+
+    //忘记密码 修改密码 post请求
+    @RequestMapping(path = "/forget", method = RequestMethod.POST)
+    public String resetPassword(String email, String verifyCode, String password, HttpSession session, Model model){
+        String code = (String) session.getAttribute(email);
+        if(StringUtils.isBlank(code) || StringUtils.isBlank(verifyCode) || !verifyCode.equalsIgnoreCase(code)){
+            model.addAttribute("verifyCodeMsg", "验证码错误");
+            return "/site/forget";
+        }
+        Map<String, Object> map = userService.resetPassword(email, password);
+        if(map == null || map.isEmpty()){
+            return "redirect:/login";
+        }
+        else{
+            model.addAttribute("emailMsg", map.get("emailMsg"));
+            model.addAttribute("passwordMsg", map.get("passwordMsg"));
+            return "/site/forget";
+        }
+    }
 
 }

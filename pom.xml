@@ -73,11 +73,21 @@
 			<version>3.9</version>
 		</dependency>
 
+		<!--该工具 有安全漏洞-->
+		<!--use the Random (rather than SecureRandom) function for generating CAPTCHA values,-->
+		<!--which makes it easier for remote attackers to bypass intended access restrictions via a brute-force approach.-->
 		<dependency>
 			<groupId>com.github.penggle</groupId>
 			<artifactId>kaptcha</artifactId>
 			<version>2.3.2</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.58</version>
+		</dependency>
+
 
 
 

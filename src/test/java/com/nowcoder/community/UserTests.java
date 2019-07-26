@@ -11,26 +11,26 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
 
-    @RunWith(SpringRunner.class)
-    @SpringBootTest
-    @ContextConfiguration(classes = CommunityApplication.class)
-    public class UserTests {
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@ContextConfiguration(classes = CommunityApplication.class)
+public class UserTests {
 
-        @Autowired
-        private UserMapper userMapper;
+    @Autowired
+    private UserMapper userMapper;
 
-        @Test
-        public void testSelect(){
-            User user = userMapper.selectById(101);
-            System.out.println(user);
+    @Test
+    public void testSelect(){
+        User user = userMapper.selectById(101);
+        System.out.println(user);
 
-            user = userMapper.selectByName("liubei");
-            System.out.println(user);
+        user = userMapper.selectByName("liubei");
+        System.out.println(user);
 
-            user = userMapper.selectByEmail("nowcoder101@sina.com");
-            System.out.println(user);
+        user = userMapper.selectByEmail("nowcoder101@sina.com");
+        System.out.println(user);
 
-        }
+    }
 
     @Test
     public void testInsert(){
@@ -48,7 +48,7 @@ import java.util.Date;
     }
 
     @Test
-    public void testUpdate(){
+    public void testUpdat(){
         userMapper.updateStatus(150, 1);
         userMapper.updateHeader(150, "http://images.nowcoder.com/head/102.png");
         userMapper.updatePassword(150, "123456");

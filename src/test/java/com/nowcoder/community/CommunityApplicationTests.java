@@ -13,6 +13,8 @@ public class CommunityApplicationTests {
 
 	@Test
 	public void contextLoads() {
+		String s = "dsfsf209rj21";
+		System.out.println(s.substring(0,3));
 	}
 
 }

@@ -1,6 +1,9 @@
 package com.nowcoder.community.service;
 
+import com.google.code.kaptcha.Producer;
+import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.dao.UserMapper;
+import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtils;
@@ -24,6 +27,9 @@ public class UserService implements CommunityConstant{
     private UserMapper userMapper;
 
     @Autowired
+    private LoginTicketMapper loginTicketMapper;
+
+    @Autowired
     private TemplateEngine templateEngine;
 
     @Autowired
@@ -35,10 +41,14 @@ public class UserService implements CommunityConstant{
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
+    //查询用户By Id
     public User findUserById(int id){
         return userMapper.selectById(id);
     }
 
+    /**
+     * 用户注册
+     */
     public Map<String, Object> register(User user){
         Map<String, Object> map = new HashMap<>();
         //空值处理
@@ -89,6 +99,9 @@ public class UserService implements CommunityConstant{
         return map;
     }
 
+    /**
+     * 验证激活码 激活用户
+     */
     public int activation(int userId, String code){
         User user = userMapper.selectById(userId);
         if(user.getActivationCode().equals(code)){
@@ -104,4 +117,115 @@ public class UserService implements CommunityConstant{
             return ACTIVATION_FAILURE;
         }
     }
+
+    /**
+     * 登录业务逻辑 (第一次登录)
+     */
+    public Map<String, Object> login(String username, String password, long expiredSeconds){
+        Map<String, Object> map = new HashMap<>();
+
+        //空值处理
+        if(StringUtils.isBlank(username)){
+            map.put("usernameMsg", "账号不能为空!");
+            return map;
+        }
+        if(StringUtils.isBlank(password)){
+            map.put("passwordMsg", "密码不能为空!");
+        }
+
+        //验证账号
+        User user = userMapper.selectByName(username);
+        if(user == null){
+            map.put("usernameMsg", "该账号不存在!");
+            return map;
+        }
+        //验证激活状态 0-未激活 1-已激活
+        if(user.getStatus() == 0){
+            map.put("usernameMsg", "该账号未激活!");
+            return map;
+        }
+        //验证密码
+        password = CommunityUtils.md5(password + user.getSalt());
+        if(!password.equals(user.getPassword())){
+            map.put("passwordMsg", "密码不正确!");
+            return map;
+        }
+
+        //生成登录凭证
+        String ticket = CommunityUtils.generateUUID();
+        LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setUserId(user.getId());
+        loginTicket.setTicket(ticket);
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
+        loginTicketMapper.insertLoginTicket(loginTicket);
+
+        map.put("ticket", ticket);
+        return map;
+    }
+
+
+    //用户退出业务逻辑
+    public void logout(String ticket){
+        loginTicketMapper.updateStatus(ticket, 1);
+    }
+
+
+    /**
+     * 忘记密码 获取邮箱验证码
+     */
+    public Map<String, Object> getVerifyCode(String email){
+        Map<String, Object> map = new HashMap<>();
+        //空值处理 前端处理了
+        if(StringUtils.isBlank(email)){
+            map.put("emailMsg", "邮箱不能为空!");
+            return map;
+        }
+        //验证邮箱
+        User user = userMapper.selectByEmail(email);
+        if(user == null){
+            map.put("emailMsg", "该邮箱尚未注册!");
+            return map;
+        }
+
+        //生成验证码
+        String verifyCode = CommunityUtils.generateUUID().substring(0,6).toUpperCase();
+        map.put("verifyCode", verifyCode);
+        //发送邮件
+        Context context = new Context();
+        context.setVariable("email", email);
+        context.setVariable("verifyCode", verifyCode);
+        String content = templateEngine.process("/mail/forget", context);
+        mailClient.sendMail(email, "忘记密码", content);
+
+        return map;
+    }
+
+    /**
+     * 忘记密码->修改密码
+     */
+    public Map<String, Object> resetPassword(String email, String password){
+        Map<String, Object> map = new HashMap<>();
+        //空值处理
+        if(StringUtils.isBlank(email)){
+            map.put("emailMsg", "邮箱不能为空!");
+            return map;
+        }
+        if(StringUtils.isBlank(password)){
+            map.put("passwordMsg", "密码不能为空");
+            return map;
+        }
+        //验证邮箱
+        User user = userMapper.selectByEmail(email);
+        if(user == null){
+            map.put("emailMsg", "该邮箱尚未注册!");
+            return map;
+        }
+        //重置密码
+        password = CommunityUtils.md5(password + user.getSalt());
+        userMapper.updatePassword(user.getId(), password);
+
+        return map;
+    }
+
 }

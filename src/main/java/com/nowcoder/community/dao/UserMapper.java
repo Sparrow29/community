@@ -2,9 +2,12 @@ package com.nowcoder.community.dao;
 
 import com.nowcoder.community.entity.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserMapper {
+
+    int updatePassword(@Param(("id")) int id, @Param("password") String password);
 
     User selectById(int id);
 
@@ -18,6 +21,7 @@ public interface UserMapper {
 
     int updateHeader(int id, String headerUrl);
 
-    int updatePassword(int id, String password);
+
+
 
 }

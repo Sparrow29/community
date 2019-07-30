@@ -49,8 +49,8 @@ public class UserTests {
 
     @Test
     public void testUpdat(){
-        userMapper.updateStatus(150, 1);
-        userMapper.updateHeader(150, "http://images.nowcoder.com/head/102.png");
-        userMapper.updatePassword(150, "123456");
+//        userMapper.updateStatus(150, 1);
+//        userMapper.updateHeader(150, "http://images.nowcoder.com/head/102.png");
+        userMapper.updatePassword(1, "123456");
     }
 }

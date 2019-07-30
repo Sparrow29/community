@@ -1,8 +1,8 @@
 package com.nowcoder.community;
 
+import org.junit.Test;
 import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.entity.LoginTicket;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +20,7 @@ public class MapperTests {
     private LoginTicketMapper loginTicketMapper;
 
     @Test
-    public void testInsertLoginTicket(){
+    public void testInsertLoginTicket() {
         LoginTicket loginTicket = new LoginTicket();
         loginTicket.setUserId(1);
         loginTicket.setTicket("test1");
@@ -31,15 +31,16 @@ public class MapperTests {
     }
 
     @Test
-    public void testSelectByTicket(){
+    public void testSelectByTicket() {
         LoginTicket loginTicket = loginTicketMapper.selectByTicket("test");
         System.out.println(loginTicket);
     }
 
     @Test
-    public void testUpdateStatus(){
+    public void testUpdateStatus() {
         loginTicketMapper.updateStatus("test", 0);
         LoginTicket loginTicket = loginTicketMapper.selectByTicket("test");
         System.out.println(loginTicket);
     }
+
 }

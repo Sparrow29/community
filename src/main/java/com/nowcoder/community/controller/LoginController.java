@@ -145,12 +145,7 @@ public class LoginController implements CommunityConstant {
         }
     }
 
-    //处理用户登出请求
-    @RequestMapping(path = "/logout", method = RequestMethod.GET)
-    public String logout(@CookieValue("ticket") String ticket){
-        userService.logout(ticket);
-        return "redirect:/login";
-    }
+
 
     //返回忘记密码页面
     @RequestMapping(path = "/forget", method = RequestMethod.GET)

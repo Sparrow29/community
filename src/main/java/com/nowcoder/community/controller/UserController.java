@@ -1,5 +1,6 @@
 package com.nowcoder.community.controller;
 
+import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityUtils;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,18 +46,29 @@ public class UserController {
     @Autowired
     private HostHolder hostHolder;
 
+    /**
+     *账户设置页面
+     */
+    @LoginRequired
     @RequestMapping(path = "/setting", method = RequestMethod.GET)
     public String getSettingPage() {
         return "/site/setting";
     }
 
     /**
-     * 上传头像
-     *
-     * @param headerImage
-     * @param model
-     * @return
+     * 退出登录
      */
+    @LoginRequired
+    @RequestMapping(path = "/logout", method = RequestMethod.GET)
+    public String logout(@CookieValue("ticket") String ticket){
+        userService.logout(ticket);
+        return "redirect:/login";
+    }
+
+    /**
+     * 上传头像
+     */
+    @LoginRequired
     @RequestMapping(path = "/upload", method = RequestMethod.POST)
     public String uploadHeader(MultipartFile headerImage, Model model) {
         //空值处理
@@ -123,12 +136,13 @@ public class UserController {
     /**
      * 修改密码
      */
+    @LoginRequired
     @RequestMapping(path = "/change", method = RequestMethod.POST)
-    public String changePassword(String oldPwd, String newPwd, String confirmPwd, Model model){
+    public String changePassword(String oldPwd, String newPwd, Model model){
         User user = hostHolder.getUser();
-        Map<String, Object> map = userService.changePassword(oldPwd, newPwd, confirmPwd, user);
+        Map<String, Object> map = userService.changePassword(oldPwd, newPwd, user);
         if(map == null || map.isEmpty()){
-            return "redirect:/index";
+            return "redirect:/user/logout";
         }
         else{
             model.addAttribute("oldPwdMsg", map.get("oldPwdMsg"));

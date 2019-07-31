@@ -245,7 +245,7 @@ public class UserService implements CommunityConstant{
     /**
      * 修改密码
      */
-    public Map<String, Object> changePassword(String oldPwd, String newPwd, String confirmPwd, User user){
+    public Map<String, Object> changePassword(String oldPwd, String newPwd, User user){
         Map<String, Object> map = new HashMap<>();
         if(StringUtils.isBlank(oldPwd)){
             map.put("oldPwdMsg", "原密码不能为空!");
@@ -258,10 +258,6 @@ public class UserService implements CommunityConstant{
         oldPwd = CommunityUtils.md5(oldPwd + user.getSalt());
         if(!oldPwd.equals(user.getPassword())){
             map.put("oldPwdMsg", "您输入的原密码不正确!");
-            return map;
-        }
-        if(!newPwd.equals(confirmPwd)){
-            map.put("newPwdMsg", "两次输入的密码不一致!");
             return map;
         }
         newPwd = CommunityUtils.md5(newPwd + user.getSalt());

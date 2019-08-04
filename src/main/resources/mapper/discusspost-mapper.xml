@@ -13,7 +13,9 @@
     </sql>
 
     <select id="selectDiscussPosts" resultType="DiscussPost">
-        select * from discuss_post where status != 2
+        select <include refid="selectFields"></include>
+        from discuss_post
+        where status != 2
         <if test="userId!=0">
             and user_id = #{userId}
         </if>
@@ -22,7 +24,9 @@
     </select>
     
     <select id="selectDiscussPostRows" resultType="int">
-        select count(id) from discuss_post where status != 2
+        select count(id)
+        from discuss_post
+        where status != 2
         <if test="userId!=0">
             and user_id = #{userId}
         </if>
@@ -32,5 +36,11 @@
         insert into discuss_post(<include refid="insertFields"></include>)
         values(#{userId}, #{title}, #{content}, #{type}, #{status}, #{createTime}, #{commentCount}, #{score})
     </insert>
+
+    <select id="selectDiscussPostById" resultType="DiscussPost">
+        select <include refid="selectFields"></include>
+        from discuss_post
+        where id = #{id}
+    </select>
 
 </mapper>

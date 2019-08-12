@@ -77,17 +77,17 @@
             <charset>utf-8</charset>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-<!--            控制台允许打印的日志级别-->
+            <!--控制台允许打印的日志级别-->
             <level>debug</level>
         </filter>
     </appender>
-<!--单独声明该包的日志级别-->
+    <!-- 单独声明该包的日志级别 -->
     <logger name="com.nowcoder.community" level="debug"/>
 
 
-<!--整个项目所有的jar包的根目录的日志级别-->
+    <!-- 整个项目所有的jar包的根目录的日志级别 -->
     <root level="info">
-<!--        引用了上面的组件-->
+        <!-- 引用了上面的组件 -->
         <appender-ref ref="FILE_ERROR"/>
         <appender-ref ref="FILE_WARN"/>
         <appender-ref ref="FILE_INFO"/>

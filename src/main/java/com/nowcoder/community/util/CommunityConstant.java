@@ -33,8 +33,7 @@ public interface CommunityConstant {
     int ENTITY_TYPE_POST = 1;
 
     /**
-     * 试题类型: 评论
+     * 实体类型: 评论
      */
     int ENTITY_TYPE_COMMENT = 2;
-
 }

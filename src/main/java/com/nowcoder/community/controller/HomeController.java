@@ -30,6 +30,9 @@ public class HomeController implements CommunityConstant {
     @Autowired
     private LikeService likeService;
 
+    /**
+     * 首页帖子列表
+     */
     @RequestMapping(path = "/index", method = RequestMethod.GET)
     public String getIndexPage(Model model, Page page){
         page.setRows(discussPostService.findDiscussPostRows(0));
@@ -51,6 +54,9 @@ public class HomeController implements CommunityConstant {
         return "/index";
     }
 
+    /**
+     * 服务器错误页
+     */
     @RequestMapping(path = "/error", method = RequestMethod.GET)
     public String getErrorPage(){
         return "/error/500";

@@ -13,7 +13,8 @@
     </sql>
 
     <select id="selectCommentsByEntity" resultType="Comment">
-        select <include refid="selectFields"></include>
+        select
+        <include refid="selectFields"></include>
         from comment
         where status = 0
         and entity_type = #{entityType}
@@ -23,15 +24,41 @@
     </select>
 
     <select id="selectCountByEntity" resultType="int">
-        select count(id) from comment
+        select count(id)
+        from comment
         where status = 0
-        and entity_type = #{entityType}
-        and entity_id = #{entityId}
+          and entity_type = #{entityType}
+          and entity_id = #{entityId}
     </select>
 
     <insert id="insertComment" parameterType="Comment" keyProperty="id">
         insert into comment(<include refid="insertFields"></include>)
         values(#{userId}, #{entityType}, #{entityId}, #{targetId}, #{content}, #{status}, #{createTime})
     </insert>
+
+    <select id="selectCommentByUser" resultType="Comment">
+        select
+        <include refid="selectFields"></include>
+        from comment
+        where status != 1
+        and user_id = #{userId}
+        and entity_type = 1
+        and exists(
+            select id from discuss_post where id = comment.entity_id and status != 2
+        )
+        order by create_time desc
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="selectCountByUser" resultType="int">
+        select count(id)
+        from comment
+        where status != 1
+        and user_id = #{userId}
+        and entity_type = 1
+        and exists(
+            select id from discuss_post where id = comment.entity_id and status != 2
+        )
+    </select>
 
 </mapper>

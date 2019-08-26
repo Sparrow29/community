@@ -14,17 +14,17 @@ import java.util.Map;
 @ContextConfiguration(classes = CommunityApplication.class)
 public class CommunityApplicationTests {
 
-	@Test
-	public void contextLoads() {
-		String s = "dsfsf209rj21";
-		System.out.println(s.substring(0,3));
-	}
-	
-	@Test
-	public void testMap(){
-		Map<String, Object> map = new HashMap<>();
-		map.put("1", 1);
-		System.out.println(map.get("2"));
-	}
+    @Test
+    public void testSubstring() {
+        String s = "dsfsf209rj21";
+        System.out.println(s.substring(0, 3));
+    }
+
+    @Test
+    public void testMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("1", 1);
+        System.out.println(map.get("2"));
+    }
 
 }

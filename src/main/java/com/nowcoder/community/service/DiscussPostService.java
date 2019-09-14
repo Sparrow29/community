@@ -59,4 +59,19 @@ public class DiscussPostService {
     public int updateCommentCount(int id, int commentCount){
         return discussPostMapper.updateCommentCount(id, commentCount);
     }
+
+    // 置顶帖子
+    public int setTop(int id) {
+        return discussPostMapper.updateType(id, 1);
+    }
+
+    // 加精帖子
+    public int setElite(int id) {
+        return discussPostMapper.updateStatus(id, 1);
+    }
+
+    // 拉黑帖子
+    public int setDelete(int id) {
+        return discussPostMapper.updateStatus(id, 2);
+    }
 }

@@ -47,8 +47,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                         AUTHORITY_ADMIN,
                         AUTHORITY_MODERATOR
                 )
+                .antMatchers(
+                        "/discuss/top",
+                        "/discuss/elite"
+                )
+                .hasAnyAuthority(
+                        AUTHORITY_MODERATOR
+                )
+                .antMatchers(
+                        "/discuss/delete"
+                )
+                .hasAnyAuthority(
+                        AUTHORITY_ADMIN
+                )
                 .anyRequest().permitAll();
-        
+
         // 权限不够时的处理
         http.exceptionHandling()
                 .authenticationEntryPoint(new AuthenticationEntryPoint() {
@@ -79,10 +92,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                         }
                     }
                 });
-        
+
         // Security底层会默认拦截/logout请求,进行退出处理.
         // 覆盖它默认的逻辑,才能执行我们自己的退出代码
         http.logout().logoutUrl("/securitylogout");
-        
+
     }
 }

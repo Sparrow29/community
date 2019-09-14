@@ -33,7 +33,9 @@ public class MessageController implements CommunityConstant {
     @Autowired
     private HostHolder hostHolder;
 
-    // 私信列表
+    /**
+     * 私信列表
+     */
     @RequestMapping(path = "/letter/list", method = RequestMethod.GET)
     public String getLetterList(Model model, Page page) {
         User user = hostHolder.getUser();
@@ -68,7 +70,9 @@ public class MessageController implements CommunityConstant {
     }
 
 
-    // 私信详情
+    /**
+     * 私信详情
+     */
     @RequestMapping(path = "/letter/detail/{conversationId}", method = RequestMethod.GET)
     public String getLetterDetail(@PathVariable("conversationId") String conversationId, Model model, Page page) {
         //分页信息
@@ -125,7 +129,9 @@ public class MessageController implements CommunityConstant {
     }
 
 
-    // 发送私信
+    /**
+     * 发送私信
+     */
     @RequestMapping(path = "/letter/send", method = RequestMethod.POST)
     @ResponseBody
     public String sendLetter(String toName, String content) {
@@ -151,7 +157,9 @@ public class MessageController implements CommunityConstant {
         return CommunityUtils.getJSONString(0);
     }
 
-    // 删除私信
+    /**
+     * 删除私信
+     */
     @RequestMapping(path = "/letter/delete", method = RequestMethod.POST)
     @ResponseBody
     public String deleteLetter(int id) {

@@ -27,7 +27,10 @@ public class LikeController implements CommunityConstant {
 
     @Autowired
     private EventProducer eventProducer;
-    
+
+    /**
+     * 点赞
+     */
     @RequestMapping(path = "/like", method = RequestMethod.POST)
     @ResponseBody
     public String like(int entityType, int entityId, int entityUserId, int postId){

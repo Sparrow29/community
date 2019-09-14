@@ -1,0 +1,11 @@
+/comment/add/**
+/discuss/add
+/follow
+/unfollow
+/like
+/letter/**
+/notice/**
+/user/setting
+/user/logout
+/user/upload
+/user/change

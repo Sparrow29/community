@@ -8,6 +8,14 @@ function send_letter() {
 
 	var toName = $("#recipient-name").val();
 	var content = $("#message-text").val();
+
+	//发送Ajax请求前,将CSRF令牌设置到请求的消息头中
+	var token = $("meta[name='_csrf']").attr("content");
+	var header = $("meta[name='_csrf_header']").attr("content");
+	$(document).ajaxSend(function (e, xhr, options) {
+		xhr.setRequestHeader(header, token);
+	});
+	
 	$.post(
 		CONTEXT_PATH + "/letter/send",
 		{"toName":toName,"content":content},
@@ -31,6 +39,13 @@ function delete_msg() {
 	// TODO 删除数据
 	var btn = this;
 	var id = $(btn).prev().val();
+
+	//发送Ajax请求前,将CSRF令牌设置到请求的消息头中
+	var token = $("meta[name='_csrf']").attr("content");
+	var header = $("meta[name='_csrf_header']").attr("content");
+	$(document).ajaxSend(function (e, xhr, options) {
+		xhr.setRequestHeader(header, token);
+	});
 
 	$.post(
 		CONTEXT_PATH + "/letter/delete",

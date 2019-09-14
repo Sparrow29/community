@@ -28,8 +28,11 @@ public class SearchController implements CommunityConstant {
     
     @Autowired
     private LikeService likeService;
-    
 
+
+    /**
+     * 搜索
+     */
     @RequestMapping(path = "/search", method = RequestMethod.GET)
     public String search(String keyword, Page page, Model model) {
         // 搜索帖子

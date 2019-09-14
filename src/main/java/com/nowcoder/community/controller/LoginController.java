@@ -43,16 +43,25 @@ public class LoginController implements CommunityConstant {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    /**
+     * 注册页面
+     */
     @RequestMapping(path = "/register", method = RequestMethod.GET)
     public String getRegisterPage() {
         return "/site/register";
     }
 
+    /**
+     * 登录页面
+     */
     @RequestMapping(path = "/login", method = RequestMethod.GET)
     public String getLoginPage() {
         return "/site/login";
     }
 
+    /**
+     * 注册
+     */
     @RequestMapping(path = "/register", method = RequestMethod.POST)
     public String register(Model model, User user) {
         Map<String, Object> map = userService.register(user);
@@ -68,6 +77,9 @@ public class LoginController implements CommunityConstant {
         }
     }
 
+    /**
+     * 激活账号
+     */
     // http://localhost:8080/community/activation/101/code
     @RequestMapping(path = "/activation/{userId}/{code}", method = RequestMethod.GET)
     public String activation(Model model, @PathVariable int userId, @PathVariable("code") String code) {
@@ -85,6 +97,9 @@ public class LoginController implements CommunityConstant {
         return "/site/operate-result";
     }
 
+    /**
+     * 生成验证码
+     */
     @RequestMapping(path = "/kaptcha", method = RequestMethod.GET)
     public void getKaptcha(HttpServletResponse response/*, HttpSession session*/) {
         // 生成验证码
@@ -116,6 +131,7 @@ public class LoginController implements CommunityConstant {
     }
 
     /**
+     * 登录
      * @param username   接受客户端输入的用户名
      * @param password   接受客户端输入的密码
      * @param code       接受客户端输入的验证码
@@ -160,13 +176,17 @@ public class LoginController implements CommunityConstant {
     }
 
 
-    //返回忘记密码页面
+    /**
+     * 忘记密码页面
+     */
     @RequestMapping(path = "/forget", method = RequestMethod.GET)
     public String getForgetPage() {
         return "/site/forget";
     }
 
-    //忘记密码->获取邮箱验证码
+    /**
+     * 忘记密码->获取邮箱验证码
+     */
     @RequestMapping(path = "/forget/code", method = RequestMethod.GET)
     @ResponseBody
     public String getVerifyCode(String email, HttpSession session) {
@@ -181,7 +201,9 @@ public class LoginController implements CommunityConstant {
 
     }
 
-    //忘记密码 修改密码 post请求
+    /**
+     * 忘记密码 修改密码 post请求
+     */
     @RequestMapping(path = "/forget", method = RequestMethod.POST)
     public String resetPassword(String email, String verifyCode, String password, HttpSession session, Model model) {
         String code = (String) session.getAttribute(email);

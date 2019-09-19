@@ -1,7 +1,7 @@
 $(function () {
     $("#topBtn").click(setTop);
     $("#eliteBtn").click(setElite);
-    $("#deleteBtn").click(setDelte);
+    $("#deleteBtn").click(setDelete);
 });
 
 
@@ -30,6 +30,13 @@ function like(btn, entityType, entityId, entityUserId, postId) {
 
 // 置顶
 function setTop() {
+    //发送Ajax请求前,将CSRF令牌设置到请求的消息头中
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+    $(document).ajaxSend(function (e, xhr, options) {
+        xhr.setRequestHeader(header, token);
+    });
+    
     $.post(
         CONTEXT_PATH + "/discuss/top",
         {"id":$("#postId").val()},
@@ -46,6 +53,13 @@ function setTop() {
 
 // 加精
 function setElite() {
+    //发送Ajax请求前,将CSRF令牌设置到请求的消息头中
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+    $(document).ajaxSend(function (e, xhr, options) {
+        xhr.setRequestHeader(header, token);
+    });
+    
     $.post(
         CONTEXT_PATH + "/discuss/elite",
         {"id":$("#postId").val()},
@@ -62,6 +76,13 @@ function setElite() {
 
 // 删除
 function setDelete() {
+    //发送Ajax请求前,将CSRF令牌设置到请求的消息头中
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+    $(document).ajaxSend(function (e, xhr, options) {
+        xhr.setRequestHeader(header, token);
+    });
+    
     $.post(
         CONTEXT_PATH + "/discuss/delete",
         {"id":$("#postId").val()},
